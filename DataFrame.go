@@ -39,7 +39,13 @@ func NewFloatColumn(name string) Column {
 }
 
 func NewDataFrame(columns ...Column) DataFrame {
-	df := DataFrame{}
+	df := DataFrame{
+		columns:       make(map[string]Column),
+		stringColumns: make(map[string]StringSeries),
+		intColumns:    make(map[string]IntSeries),
+		floatColumns:  make(map[string]FloatSeries),
+	}
+
 	for _, col := range columns {
 		if _, ok := df.columns[col.name]; ok {
 			panic(errors.Errorf("duplicate column name: %s", col.name))
