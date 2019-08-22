@@ -78,7 +78,7 @@ func (df DataFrame) StringColumn(colName string) StringSeries {
 	if !ok {
 		panic(errors.Errorf("string column named %s not found", colName))
 	}
-	return col
+	return col.Clone()
 }
 
 func (df DataFrame) FloatColumn(colName string) FloatSeries {
@@ -86,7 +86,7 @@ func (df DataFrame) FloatColumn(colName string) FloatSeries {
 	if !ok {
 		panic(errors.Errorf("float column named %s not found", colName))
 	}
-	return col
+	return col.Clone()
 }
 
 func (df DataFrame) IntColumn(colName string) IntSeries {
@@ -94,7 +94,7 @@ func (df DataFrame) IntColumn(colName string) IntSeries {
 	if !ok {
 		panic(errors.Errorf("int column named %s not found", colName))
 	}
-	return col
+	return col.Clone()
 }
 
 func (df DataFrame) DropColumn(name string) DataFrame {
@@ -110,10 +110,10 @@ func (df DataFrame) DropColumn(name string) DataFrame {
 	return changed
 }
 
-func (df DataFrame) Clone() (cloned DataFrame) {
-	for _, col := range df.columns {
-		cloned.columns[col.name] = col
+func (df DataFrame) Clone() DataFrame {
+	cloned := NewDataFrame(df.Columns()...)
 
+	for _, col := range df.columns {
 		switch col.dType {
 		case element.StringType:
 			cloned.stringColumns[col.name] = df.StringColumn(col.name)
@@ -129,17 +129,17 @@ func (df DataFrame) Clone() (cloned DataFrame) {
 func (df DataFrame) SetStringColumn(colName string, value StringSeries) DataFrame {
 	changed := df.Clone()
 	changed.stringColumns[colName] = value.Clone()
-	return df
+	return changed
 }
 
 func (df DataFrame) SetIntColumn(colName string, value IntSeries) DataFrame {
 	changed := df.Clone()
 	changed.intColumns[colName] = value.Clone()
-	return df
+	return changed
 }
 
 func (df DataFrame) SetFloatColumn(colName string, value FloatSeries) DataFrame {
 	changed := df.Clone()
 	changed.floatColumns[colName] = value.Clone()
-	return df
+	return changed
 }
