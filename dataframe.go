@@ -136,38 +136,41 @@ func (df DataFrame) Clone() DataFrame {
 	return cloned
 }
 
-func (df DataFrame) SetStringColumn(colName string, value StringSeries) DataFrame {
+func (df DataFrame) SetStringColumn(colName string, value StringSeries) (DataFrame, error) {
 	changed := df.Clone()
 	if _, ok := changed.columns[colName]; !ok {
 		changed.columns[colName] = NewStringColumn(colName)
 	} else if _, ok := changed.stringColumns[colName]; !ok {
-		log.Get().Warnf("column name %s already exists and is not of type string", colName)
-		return changed
+		err := Duplicate{What: "non-string column", Value: colName}
+		log.Get().Warn(err.Error())
+		return changed, err
 	}
 	changed.stringColumns[colName] = value.Clone()
-	return changed
+	return changed, nil
 }
 
-func (df DataFrame) SetIntColumn(colName string, value IntSeries) DataFrame {
+func (df DataFrame) SetIntColumn(colName string, value IntSeries) (DataFrame, error) {
 	changed := df.Clone()
 	if _, ok := changed.columns[colName]; !ok {
 		changed.columns[colName] = NewIntColumn(colName)
 	} else if _, ok := changed.intColumns[colName]; !ok {
-		log.Get().Warnf("column name %s already exists and is not of type int", colName)
-		return changed
+		err := Duplicate{What: "non-int column", Value: colName}
+		log.Get().Warn(err.Error())
+		return changed, err
 	}
 	changed.intColumns[colName] = value.Clone()
-	return changed
+	return changed, nil
 }
 
-func (df DataFrame) SetFloatColumn(colName string, value FloatSeries) DataFrame {
+func (df DataFrame) SetFloatColumn(colName string, value FloatSeries) (DataFrame, error) {
 	changed := df.Clone()
 	if _, ok := changed.columns[colName]; !ok {
 		changed.columns[colName] = NewFloatColumn(colName)
 	} else if _, ok := changed.floatColumns[colName]; !ok {
-		log.Get().Warnf("column name %s already exists and is not of type float", colName)
-		return changed
+		err := Duplicate{What: "non-float column", Value: colName}
+		log.Get().Warn(err.Error())
+		return changed, err
 	}
 	changed.floatColumns[colName] = value.Clone()
-	return changed
+	return changed, nil
 }

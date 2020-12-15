@@ -48,7 +48,14 @@ func (c CSV) LoadCSV(rdr io.Reader) (DataFrame, error) {
 		for i := range rows {
 			colVal = append(colVal, rows[i][j])
 		}
-		df = df.SetStringColumn(columns[j].name, NewStringSeries(colVal...))
+		df, err = df.SetStringColumn(columns[j].name, NewStringSeries(colVal...))
+		if err != nil {
+			setErr := ProcessingError{
+				Err: errors.Wrapf(err, "setting value of %s as string series", columns[j].name),
+			}
+			log.Get().Error(setErr.Error())
+			return DataFrame{}, setErr
+		}
 	}
 	return df, nil
 }

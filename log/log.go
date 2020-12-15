@@ -2,6 +2,7 @@ package log
 
 import (
 	"github.com/sirupsen/logrus"
+	"io"
 	"io/ioutil"
 	"os"
 )
@@ -24,4 +25,8 @@ func Get() *logrus.Logger {
 		log.SetOutput(os.Stdout)
 	}
 	return log
+}
+
+func SetOutput(output io.Writer) {
+	log.SetOutput(output)
 }

@@ -131,6 +131,63 @@ func TestDataFrame_DropColumn_Float(t *testing.T) {
 	require.Equal(t, col4Val, val)
 }
 
+func TestDataFrame_SetIntColumn_ReplaceColumnValue(t *testing.T) {
+	df := testDF()
+	newVal := NewIntSeries(11, 12, 13)
+	changed, err := df.SetIntColumn(col3, newVal)
+	require.NoError(t, err)
+
+	val, err := changed.IntColumn(col3)
+	require.NoError(t, err)
+	require.Equal(t, newVal, val)
+
+	val, err = df.IntColumn(col3)
+	require.NoError(t, err)
+	require.Equal(t, col3Val, val)
+}
+
+func TestDataFrame_SetStringColumn_ReplaceColumnValue(t *testing.T) {
+	df := testDF()
+	newVal := NewStringSeries("five", "six")
+	changed, err := df.SetStringColumn(col2, newVal)
+	require.NoError(t, err)
+
+	val, err := changed.StringColumn(col2)
+	require.NoError(t, err)
+	require.Equal(t, newVal, val)
+
+	val, err = df.StringColumn(col2)
+	require.NoError(t, err)
+	require.Equal(t, col2Val, val)
+}
+
+func TestDataFrame_SetFloatColumn_ReplaceColumnValue(t *testing.T) {
+	df := testDF()
+	newVal := NewFloatSeries(11, 12, 13)
+	changed, err := df.SetFloatColumn(col4, newVal)
+	require.NoError(t, err)
+
+	val, err := changed.FloatColumn(col4)
+	require.NoError(t, err)
+	require.Equal(t, newVal, val)
+
+	val, err = df.FloatColumn(col4)
+	require.NoError(t, err)
+	require.Equal(t, col4Val, val)
+}
+
+func TestDataFrame_SetFloatColumn_DuplicateColumn(t *testing.T) {
+	df := testDF()
+	newVal := NewFloatSeries(11, 12, 13)
+	_, err := df.SetFloatColumn(col3, newVal)
+	require.Error(t, err)
+	require.IsType(t, Duplicate{}, err)
+
+	val, err := df.FloatColumn(col3)
+	require.NoError(t, err)
+	require.Equal(t, col3Val, val)
+}
+
 const (
 	col1 = "col1"
 	col2 = "col2"
@@ -152,9 +209,9 @@ func testDF() DataFrame {
 		NewIntColumn(col3),
 		NewFloatColumn(col4))
 
-	return df.
-		SetStringColumn(col1, col1Val).
-		SetStringColumn(col2, col2Val).
-		SetIntColumn(col3, col3Val).
-		SetFloatColumn(col4, col4Val)
+	df, _ = df.SetStringColumn(col1, col1Val)
+	df, _ = df.SetStringColumn(col2, col2Val)
+	df, _ = df.SetIntColumn(col3, col3Val)
+	df, _ = df.SetFloatColumn(col4, col4Val)
+	return df
 }
